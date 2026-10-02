@@ -1,8 +1,4 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>EnvRisk — Inteligência Territorial</title>
 <meta name="description" content="A EnvRisk faz inteligência territorial baseada em dados: integra bases geoespaciais públicas para mostrar, com fonte e data, o que incide sobre um local em São Paulo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,10 +40,13 @@ a:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
 .hero::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:url("assets/mapa.jpg") center bottom/cover no-repeat;opacity:.55;pointer-events:none}
 .hero::before{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(var(--navy),rgba(15,30,46,0) 60%);z-index:1;pointer-events:none}
 .hero .wrap{position:relative;z-index:2}
-.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:28px;flex-wrap:wrap}
-.top img{height:30px;width:auto;display:block}
-.top nav{display:flex;gap:24px;flex-wrap:wrap}
-.top nav a{color:var(--on-navy-muted);text-decoration:none;font-family:var(--f-mono);font-size:13px;letter-spacing:.08em}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(15,30,46,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(143,163,184,.22)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:16px}
+.top img{height:28px;width:auto;display:block;flex-shrink:0}
+.top nav{display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
+.top nav::-webkit-scrollbar{display:none}
+section[id]{scroll-margin-top:72px}
+.top nav a{color:var(--on-navy-muted);text-decoration:none;font-family:var(--f-mono);font-size:13px;letter-spacing:.08em;white-space:nowrap;padding-block:12px}
 .top nav a:hover{color:var(--on-navy)}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:48px;align-items:center;padding-block:56px 120px}
 .hero-text{display:flex;flex-direction:column;gap:24px;min-width:0}
@@ -161,21 +160,22 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
   section.block{padding-block:64px}
 }
 </style>
-</head>
-<body>
 
-<header class="hero">
+<header class="topbar">
+  <div class="wrap top">
+    <a href="#inicio" aria-label="EnvRisk, voltar ao início"><img src="assets/logo.png" alt="EnvRisk"></a>
+    <nav aria-label="Seções">
+      <a href="#problema">Por quê</a>
+      <a href="#metodo">Método</a>
+      <a href="#fontes">Fontes</a>
+      <a href="#serie">Série</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="inicio" aria-label="Apresentação">
   <div class="wrap">
-    <div class="top">
-      <img src="assets/logo.png" alt="EnvRisk">
-      <nav aria-label="Seções">
-        <a href="#problema">Por quê</a>
-        <a href="#metodo">Método</a>
-        <a href="#fontes">Fontes</a>
-        <a href="#serie">Série</a>
-        <a href="#contato">Contato</a>
-      </nav>
-    </div>
     <div class="hero-grid">
       <div class="hero-text">
         <span class="eyebrow">Inteligência territorial baseada em dados</span>
@@ -208,7 +208,7 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
       </figure>
     </div>
   </div>
-</header>
+</section>
 
 <div class="strip" aria-label="Números da base">
   <div class="wrap">
@@ -373,5 +373,5 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
     <span>© 2026 EnvRisk</span>
   </div>
 </footer>
-</body>
-</html>
+
+</body></html>
