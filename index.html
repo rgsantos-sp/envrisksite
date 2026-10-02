@@ -33,6 +33,7 @@ a{color:var(--teal)}
 a:hover{color:var(--ink)}
 a:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
 .wrap{max-width:var(--measure);margin:0 auto;padding-inline:24px}
+.nowrap{white-space:nowrap}
 .eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
 
 /* hero */
@@ -224,7 +225,7 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
     <div class="wrap">
       <div class="head">
         <span class="eyebrow">O problema</span>
-        <h2 id="problema-t">Os dados são públicos. Juntá-los ainda é trabalho manual.</h2>
+        <h2 id="problema-t">Os dados são públicos. <span class="nowrap">Juntá-los</span> ainda é trabalho manual.</h2>
         <p class="lede">Para saber o que incide sobre um único endereço, um consultor abre vários portais, cada um com seu formato, sua projeção e sua data. Depois monta o relatório à mão, print por print.</p>
       </div>
       <div class="versus">
