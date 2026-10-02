@@ -1,4 +1,8 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>EnvRisk — Inteligência Territorial</title>
 <meta name="description" content="A EnvRisk faz inteligência territorial baseada em dados: integra bases geoespaciais públicas para mostrar, com fonte e data, o que incide sobre um local em São Paulo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +38,7 @@ a:hover{color:var(--ink)}
 a:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
 .wrap{max-width:var(--measure);margin:0 auto;padding-inline:24px}
 .nowrap{white-space:nowrap}
+@media (max-width:600px){.br-desk{display:none}}
 .eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
 
 /* hero */
@@ -161,6 +166,8 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
   section.block{padding-block:64px}
 }
 </style>
+</head>
+<body>
 
 <header class="topbar">
   <div class="wrap top">
@@ -225,7 +232,7 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
     <div class="wrap">
       <div class="head">
         <span class="eyebrow">O problema</span>
-        <h2 id="problema-t">Os dados são públicos. <span class="nowrap">Juntá-los</span> ainda é trabalho manual.</h2>
+        <h2 id="problema-t">Os dados são públicos.<br class="br-desk"> <span class="nowrap">Juntá-los</span> ainda é trabalho manual.</h2>
         <p class="lede">Para saber o que incide sobre um único endereço, um consultor abre vários portais, cada um com seu formato, sua projeção e sua data. Depois monta o relatório à mão, print por print.</p>
       </div>
       <div class="versus">
@@ -297,7 +304,7 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
         <span class="src">CONDEPHAAT</span>
         <span class="src">IPHAN</span>
       </div>
-      <p class="note">Cada base tem cobertura, escala e data próprias. Por isso registramos o metadado de cada camada junto com o resultado.</p>
+      <p class="note">Listamos o órgão que produz cada dado. Parte das bases chega por portais de distribuição, como o DataGEO e o GeoSampa. Cada base tem cobertura, escala e data próprias, e por isso registramos o metadado de cada camada junto com o resultado.</p>
     </div>
   </section>
 
@@ -374,5 +381,5 @@ footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:1
     <span>© 2026 EnvRisk</span>
   </div>
 </footer>
-
-</body></html>
+</body>
+</html>
