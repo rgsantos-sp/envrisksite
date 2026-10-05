@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EnvRisk — Inteligência Territorial</title>
+<meta name="description" content="A EnvRisk faz inteligência territorial baseada em dados: integra bases geoespaciais públicas para mostrar, com fonte e data, o que incide sobre um local em São Paulo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: navy cartographic hero with a layer-stack diagram, a data strip, then light reading sections on a 1080px measure; one deliberate brand look, every color set explicitly. */
+:root{
+  --navy:#0F1E2E;
+  --navy-2:#16293C;
+  --paper:#F3F6F8;
+  --ink:#13202E;
+  --muted:#4A5866;
+  --rule:#CBD5DD;
+  --teal:#1F6B5D;
+  --teal-light:#2E8B7A;
+  --amber:#E8A33D;
+  --on-navy:#FFFFFF;
+  --on-navy-muted:#C9D4DF;
+  --on-navy-faint:#8FA3B8;
+  --f-display:'Archivo', 'Arial Narrow', Arial, sans-serif;
+  --f-body:'IBM Plex Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+  --measure:1080px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+a{color:var(--teal)}
+a:hover{color:var(--ink)}
+a:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.wrap{max-width:var(--measure);margin:0 auto;padding-inline:24px}
+.nowrap{white-space:nowrap}
+@media (max-width:600px){.br-desk{display:none}}
+.eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+
+/* hero */
+.hero{background:var(--navy);color:var(--on-navy);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:url("assets/mapa.jpg") center bottom/cover no-repeat;opacity:.55;pointer-events:none}
+.hero::before{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(var(--navy),rgba(15,30,46,0) 60%);z-index:1;pointer-events:none}
+.hero .wrap{position:relative;z-index:2}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(15,30,46,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(143,163,184,.22)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:16px}
+.top img{height:28px;width:auto;display:block;flex-shrink:0}
+.top nav{display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
+.top nav::-webkit-scrollbar{display:none}
+section[id]{scroll-margin-top:72px}
+.top nav a{color:var(--on-navy-muted);text-decoration:none;font-family:var(--f-mono);font-size:13px;letter-spacing:.08em;white-space:nowrap;padding-block:12px}
+.top nav a:hover{color:var(--on-navy)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:48px;align-items:center;padding-block:56px 120px}
+.hero-text{display:flex;flex-direction:column;gap:24px;min-width:0}
+.hero .eyebrow{color:var(--amber)}
+.hero h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(40px,6.4vw,68px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
+.hero p{margin:0;font-size:20px;line-height:1.55;color:var(--on-navy-muted);max-width:56ch}
+.cta{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;background:var(--amber);color:var(--navy);text-decoration:none;font-weight:600;padding:14px 22px;min-height:48px}
+.cta:hover{background:#F4C27A;color:var(--navy)}
+.stack{min-width:0}
+.stack svg{width:100%;height:auto;display:block;max-width:560px;margin-inline:auto}
+.stack figcaption{font-family:var(--f-mono);font-size:12px;color:var(--on-navy-faint);text-align:center;margin-top:8px}
+
+/* data strip */
+.strip{background:var(--navy-2);color:var(--on-navy)}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-block:36px}
+.strip div{display:flex;flex-direction:column;gap:6px;min-width:0;border-left:1px solid rgba(143,163,184,.35);padding-left:18px}
+.strip b{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.strip span{font-size:14px;line-height:1.45;color:var(--on-navy-muted)}
+
+/* sections */
+section.block{padding-block:88px}
+section.block + section.block{border-top:1px solid var(--rule)}
+.head{display:flex;flex-direction:column;gap:18px;margin-bottom:44px;max-width:880px}
+p,li{text-wrap:pretty}
+.head .eyebrow{color:var(--teal)}
+h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(30px,4.4vw,44px);line-height:1.08;letter-spacing:-.01em;color:var(--navy);text-wrap:balance}
+.lede{margin:0;font-size:19px;color:var(--muted);max-width:62ch}
+
+/* problem: manual vs integrated */
+.versus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:stretch}
+.side{padding:32px 28px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.side.manual{background:#FFFFFF;border:1px dashed var(--on-navy-faint)}
+.side.integrated{background:var(--navy);color:var(--on-navy)}
+.side .eyebrow{color:var(--muted)}
+.side.integrated .eyebrow{color:var(--amber)}
+.side h3{margin:0;font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.15;color:var(--navy)}
+.side.integrated h3{color:var(--on-navy)}
+.side ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;counter-reset:m}
+.side li{counter-increment:m;display:grid;grid-template-columns:32px minmax(0,1fr);gap:8px;font-size:16px;line-height:1.5;color:var(--ink)}
+.side li::before{content:counter(m,decimal-leading-zero);font-family:var(--f-mono);font-size:13px;color:var(--muted);padding-top:2px}
+.side.integrated li{color:var(--on-navy-muted)}
+.side.integrated li::before{color:var(--amber)}
+.portals{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.portals span{font-family:var(--f-mono);font-size:12px;padding:2px 8px;border:1px solid var(--rule);color:var(--muted)}
+.side .foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--rule);font-size:15px;color:var(--muted)}
+.side.integrated .foot{border-top-color:rgba(143,163,184,.35);color:var(--on-navy-muted)}
+.risks{margin-top:40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.risks div{min-width:0}
+.risks b{display:block;font-family:var(--f-display);font-weight:600;font-size:19px;color:var(--navy);margin-bottom:6px}
+.risks p{margin:0;color:var(--muted);font-size:16px}
+
+/* method: a real sequence */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;counter-reset:s}
+.steps li{counter-increment:s;padding:24px 24px 0 0;border-top:2px solid var(--navy);position:relative;min-width:0}
+.steps li::before{content:counter(s,decimal-leading-zero);font-family:var(--f-mono);font-size:13px;color:var(--teal);display:block;margin-bottom:10px}
+.steps li:not(:last-child)::after{content:"";position:absolute;top:-7px;right:12px;width:12px;height:12px;border-top:2px solid var(--navy);border-right:2px solid var(--navy);transform:rotate(45deg);background:var(--paper)}
+.steps h3{margin:0 0 8px 0;font-family:var(--f-display);font-weight:600;font-size:21px;color:var(--navy)}
+.steps p{margin:0;color:var(--muted);font-size:16px}
+
+/* sources */
+.sources{display:flex;flex-wrap:wrap;gap:10px}
+.src{font-family:var(--f-mono);font-size:14px;padding:8px 14px;border:1px solid var(--rule);background:#FFFFFF;color:var(--ink)}
+.src small{color:var(--muted);font-size:12px;margin-left:6px}
+.note{margin:24px 0 0 0;font-size:15px;color:var(--muted);max-width:70ch}
+
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+.three h3{margin:0 0 10px 0;font-family:var(--f-display);font-weight:600;font-size:22px;line-height:1.25;color:var(--navy)}
+.three p{margin:0;color:var(--muted)}
+.three > div{border-top:2px solid var(--navy);padding-top:20px;min-width:0}
+
+/* series table */
+.series{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.series th{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:500;padding:0 16px 12px 0;border-bottom:1px solid var(--navy)}
+.series td{padding:18px 16px 18px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.series td.n{font-family:var(--f-mono);color:var(--teal);width:56px}
+.series td.d{font-family:var(--f-mono);font-size:14px;color:var(--muted);white-space:nowrap;width:120px}
+.series td.t strong{display:block;font-weight:600;color:var(--ink)}
+.series td.t span{color:var(--muted);font-size:15px}
+.series td.s{width:120px;text-align:right;padding-right:0}
+.chip{display:inline-block;font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;padding:4px 10px;border:1px solid var(--rule);color:var(--muted);white-space:nowrap}
+.table-scroll{overflow-x:auto}
+
+/* principles on navy */
+.dark{background:var(--navy);color:var(--on-navy)}
+.dark h2{color:var(--on-navy)}
+.dark .head .eyebrow{color:var(--amber)}
+.dark .three > div{border-top-color:var(--amber)}
+.dark .three h3{color:var(--on-navy)}
+.dark .three p{color:var(--on-navy-muted)}
+section.block.dark + section.block{border-top:0}
+
+/* contact */
+.contact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px;align-items:start}
+.contact dl{margin:0;display:grid;gap:20px}
+.contact dt{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.contact dd{margin:4px 0 0 0;font-size:19px;user-select:all;overflow-wrap:anywhere}
+
+footer{background:var(--navy-2);color:var(--on-navy-faint);font-family:var(--f-mono);font-size:13px;line-height:1.7}
+footer .wrap{padding-block:32px;display:flex;justify-content:space-between;gap:16px 32px;flex-wrap:wrap}
+
+/* Locus — em breve */
+.locus{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:40px;align-items:start}
+.locus-text{display:flex;flex-direction:column;gap:18px;min-width:0}
+.locus-text p{margin:0;font-size:18px;line-height:1.6}
+.locus-text .claim{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.3;color:var(--navy);border-top:2px solid var(--navy);padding-top:18px}
+.locus-box{background:var(--navy);color:var(--on-navy);padding:28px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.locus-box .eyebrow{color:var(--amber)}
+.locus-box p{margin:0;font-size:17px;line-height:1.55;color:var(--on-navy-muted)}
+.locus-box a{color:var(--on-navy);font-weight:600;word-break:break-word}
+.locus-box a:hover{color:var(--amber)}
+@media (max-width:860px){
+  .locus{grid-template-columns:1fr;gap:28px}
+  .hero-grid{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 80px}
+  .strip .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:32px}
+  .steps li:nth-child(2)::after{display:none}
+}
+@media (max-width:600px){
+  .three,.contact,.steps,.versus,.risks{grid-template-columns:minmax(0,1fr)}
+  .steps li::after{display:none}
+  .series td.s,.series th:last-child{display:none}
+  .series td.d{width:auto}
+  section.block{padding-block:64px}
+}
+
+
+/* ===== EnvRisk V2 — identidade cartográfica ===== */
+:root{
+  --geo:#8FD14F;
+  --cyan:#26A8E0;
+  --navy:#0B141E;
+  --navy-2:#101C28;
+  --paper:#F4F6F4;
+}
+body{background:var(--paper)}
+.topbar{background:rgba(8,15,23,.92);border-bottom-color:rgba(143,209,79,.16)}
+.top img{height:34px}
+.hero{min-height:690px;background:#08131c}
+.hero::after{height:100%;background:linear-gradient(90deg,rgba(6,15,23,.98) 0%,rgba(6,15,23,.88) 37%,rgba(6,15,23,.38) 68%,rgba(6,15,23,.5) 100%),url("assets/mapa.jpg") center/cover no-repeat;opacity:1}
+.hero::before{inset:0;height:100%;background-image:linear-gradient(rgba(143,209,79,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(143,209,79,.055) 1px,transparent 1px);background-size:88px 88px;z-index:1;opacity:.55}
+.hero-grid{grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr);padding-block:92px 108px;gap:60px}
+.hero-text{max-width:660px}
+.hero .eyebrow{color:var(--geo)}
+.hero h1{font-size:clamp(46px,6vw,76px);max-width:11ch;text-shadow:0 2px 24px rgba(0,0,0,.28)}
+.hero p{max-width:52ch}
+.cta{background:var(--geo);color:#0B141E;border-radius:3px}
+.cta:hover{background:#A8DF70}
+.stack{position:relative;min-height:430px}
+.stack svg{opacity:.88;filter:drop-shadow(0 20px 35px rgba(0,0,0,.3))}
+.stack figcaption{color:#AFC0CF}
+.strip{background:#0D1823;border-top:1px solid rgba(143,209,79,.15);border-bottom:1px solid rgba(143,209,79,.12)}
+.strip .wrap{gap:0;padding-block:0}
+.strip div{padding:28px 24px;border-left:1px solid rgba(143,163,184,.18)}
+.strip div:last-child{border-right:1px solid rgba(143,163,184,.18)}
+.strip b{color:#fff;font-family:var(--f-mono);font-size:32px}
+.strip b::after{content:"";display:block;width:34px;height:2px;background:var(--geo);margin-top:12px}
+.block .eyebrow{letter-spacing:.18em}
+.side,.locus-box{border-radius:3px}
+.side.integrated{background:#0D1823;border:1px solid rgba(143,209,79,.18)}
+.steps li{border-top-color:#263849}.steps li::before{color:var(--teal-light)}
+.dark{background:#0B141E}
+.dark .three > div{border-top-color:var(--geo)}
+
+/* Locus teaser — usa apenas recortes de endereços públicos fornecidos pelo autor */
+.locus{grid-template-columns:minmax(0,.82fr) minmax(520px,1.18fr);align-items:center;gap:56px}
+.locus-text .claim{border-top-color:var(--geo)}
+.locus-box{padding:0;background:#09131d;overflow:hidden;border:1px solid #253746;box-shadow:0 24px 70px rgba(8,20,30,.16)}
+.locus-preview{position:relative;aspect-ratio:16/9;overflow:hidden;background:#07111a}
+.locus-preview img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.82) contrast(1.04) brightness(.82)}
+.locus-preview::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,17,26,.18),rgba(7,17,26,0) 55%,rgba(7,17,26,.28));pointer-events:none}
+.locus-hud{position:absolute;inset:18px 18px auto 18px;display:flex;justify-content:space-between;align-items:center;z-index:2;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;color:#D8E3EC;text-transform:uppercase}
+.locus-hud .live{display:flex;align-items:center;gap:8px}.locus-hud .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--geo);box-shadow:0 0 0 4px rgba(143,209,79,.12)}
+.locus-panel{position:absolute;left:18px;bottom:18px;z-index:2;width:min(300px,52%);background:rgba(7,17,26,.88);backdrop-filter:blur(8px);border:1px solid rgba(175,192,207,.2);padding:15px 16px;color:white}
+.locus-panel b{display:block;font-family:var(--f-display);font-size:16px;margin-bottom:8px}
+.locus-panel span{display:block;font-family:var(--f-mono);font-size:11px;color:#B8C8D5;line-height:1.7}
+.locus-meta{padding:18px 20px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+.locus-meta .eyebrow{color:var(--geo)}
+.locus-meta small{color:#91A5B6;font-family:var(--f-mono);font-size:11px;text-align:right}
+
+.sources .src{border-color:#C7D1D8;background:#fff}
+.src:hover{border-color:var(--teal);transform:translateY(-1px)}
+.src{transition:.18s ease}
+@media(max-width:860px){.hero{min-height:auto}.hero-grid{grid-template-columns:1fr}.stack{min-height:0}.locus{grid-template-columns:1fr}.locus-box{max-width:720px}.hero h1{max-width:13ch}}
+@media(max-width:600px){.hero-grid{padding-block:58px 72px}.hero h1{font-size:44px}.locus-panel{width:65%}.strip div:last-child{border-right:0}}
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap top">
+    <a href="#inicio" aria-label="EnvRisk, voltar ao início"><img src="assets/logo.png" alt="EnvRisk"></a>
+    <nav aria-label="Seções">
+      <a href="#problema">Por quê</a>
+      <a href="#metodo">Método</a>
+      <a href="#locus">Locus</a>
+      <a href="#fontes">Fontes</a>
+      <a href="#serie">Série</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="inicio" aria-label="Apresentação">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow">Inteligência territorial baseada em dados</span>
+        <h1>Todo lote tem camadas. Nós as colocamos em dados.</h1>
+        <p>A EnvRisk integra bases geoespaciais públicas, ambientais, urbanísticas e de patrimônio, e cruza essas camadas sobre um ponto ou área. O resultado mostra, com fonte e data, o que está registrado sobre aquele local.</p>
+        <a class="cta" href="https://www.linkedin.com/company/135277901/" target="_blank" rel="noopener">Acompanhe a série no LinkedIn</a>
+      </div>
+      <figure class="stack" style="margin:0">
+        <svg viewBox="0 0 560 400" role="img" aria-labelledby="stack-t">
+          <title id="stack-t">Quatro camadas de dados públicos empilhadas sobre o mesmo ponto: vegetação significativa, rede de drenagem, zoneamento e bem tombado</title>
+          <g font-family="IBM Plex Mono, ui-monospace, monospace" font-size="13" fill="#C9D4DF">
+            <polygon points="190,30 340,80 190,130 40,80" fill="rgba(46,139,122,.30)" stroke="#2E8B7A" stroke-width="1.5"/>
+            <text x="360" y="84">Vegetação significativa</text>
+            <polygon points="190,110 340,160 190,210 40,160" fill="rgba(143,163,184,.16)" stroke="#8FA3B8" stroke-width="1.5"/>
+            <path d="M70 150 C 120 175, 170 140, 230 170 S 300 175, 320 165" fill="none" stroke="#2E8B7A" stroke-width="2" stroke-dasharray="5 4"/>
+            <text x="360" y="164">Rede de drenagem</text>
+            <polygon points="190,190 340,240 190,290 40,240" fill="rgba(143,163,184,.10)" stroke="#8FA3B8" stroke-width="1.5"/>
+            <path d="M115 215 L 265 265 M 140 265 L 240 215" fill="none" stroke="#8FA3B8" stroke-width="1"/>
+            <text x="360" y="244">Zoneamento</text>
+            <polygon points="190,270 340,320 190,370 40,320" fill="rgba(232,163,61,.14)" stroke="#E8A33D" stroke-width="1.5"/>
+            <text x="360" y="324">Bem tombado</text>
+            <line x1="190" y1="80" x2="190" y2="320" stroke="#E8A33D" stroke-width="2" stroke-dasharray="3 5"/>
+            <circle cx="190" cy="80" r="5" fill="#E8A33D"/>
+            <circle cx="190" cy="160" r="5" fill="#E8A33D"/>
+            <circle cx="190" cy="240" r="5" fill="#E8A33D"/>
+            <circle cx="190" cy="320" r="7" fill="#E8A33D" stroke="#0F1E2E" stroke-width="2"/>
+          </g>
+        </svg>
+        <figcaption>Ilustração: camadas que podem incidir sobre um mesmo ponto</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="strip" aria-label="Números da base">
+  <div class="wrap">
+    <div><b>45</b><span>camadas públicas integradas e consultadas em cada análise</span></div>
+    <div><b>3</b><span>esferas de patrimônio cruzadas: municipal, estadual e federal</span></div>
+    <div><b>1</b><span>sistema de referência para todas as bases: SIRGAS 2000</span></div>
+    <div><b>0</b><span>pontuações ou pesos de risco: mostramos o que está registrado</span></div>
+  </div>
+</div>
+
+<main>
+  <section class="block" id="problema" aria-labelledby="problema-t">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">O problema</span>
+        <h2 id="problema-t">Os dados são públicos.<br class="br-desk"> <span class="nowrap">Juntá-los</span> ainda é trabalho manual.</h2>
+        <p class="lede">Para saber o que incide sobre um único endereço, um consultor abre vários portais, cada um com seu formato, sua projeção e sua data. Depois monta o relatório à mão, print por print.</p>
+      </div>
+      <div class="versus">
+        <div class="side manual">
+          <span class="eyebrow">Hoje, à mão</span>
+          <h3>Um relatório, muitos portais</h3>
+          <ol>
+            <li><span>Abrir cada portal e localizar o imóvel de novo em cada um
+              <span class="portals"><span>GeoSampa</span><span>DataGEO</span><span>SICAR</span><span>CETESB</span><span>IBAMA</span><span>CONDEPHAAT</span><span>IPHAN</span></span></span></li>
+            <li><span>Baixar camadas em formatos diferentes e converter projeções</span></li>
+            <li><span>Sobrepor tudo num SIG e conferir se nada ficou de fora</span></li>
+            <li><span>Tirar prints, copiar atributos e anotar fonte e data de cada base</span></li>
+            <li><span>Montar o documento no editor de texto e revisar</span></li>
+          </ol>
+          <p class="foot">Horas de trabalho técnico por endereço, repetidas a cada novo caso.</p>
+        </div>
+        <div class="side integrated">
+          <span class="eyebrow">Com dados integrados</span>
+          <h3>Uma consulta, todas as camadas</h3>
+          <ol>
+            <li><span>As bases já estão coletadas, padronizadas e datadas</span></li>
+            <li><span>O ponto ou a área é cruzado com todas as camadas de uma vez</span></li>
+            <li><span>Cada ocorrência vem com fonte, data e base legal</span></li>
+            <li><span>O que não foi encontrado também aparece, camada por camada</span></li>
+          </ol>
+          <p class="foot">O tempo do profissional vai para a análise, não para a coleta.</p>
+        </div>
+      </div>
+      <div class="risks">
+        <div><b>Camada esquecida</b><p>Na coleta manual, uma base que ninguém lembrou de abrir simplesmente não entra no relatório.</p></div>
+        <div><b>Versão desatualizada</b><p>Um arquivo baixado meses atrás pode não refletir o mapa vigente.</p></div>
+        <div><b>Resultado que não se repete</b><p>Dois técnicos, ou o mesmo técnico em dias diferentes, podem chegar a conclusões distintas.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="metodo" aria-labelledby="metodo-t">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Método</span>
+        <h2 id="metodo-t">Do dado bruto à leitura do território</h2>
+        <p class="lede">Cálculo determinístico: a mesma consulta, sobre as mesmas bases, produz sempre o mesmo resultado. Nada é inferido.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Coleta</h3><p>Bases oficiais obtidas na fonte, com versão e data registradas.</p></li>
+        <li><h3>Padronização</h3><p>Geometrias corrigidas e convertidas para um único sistema de referência.</p></li>
+        <li><h3>Cruzamento</h3><p>Sobreposição espacial de todas as camadas sobre o ponto ou a área consultada.</p></li>
+        <li><h3>Leitura</h3><p>O que cada camada mostra, o que não mostra e qual a base legal.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="locus" aria-labelledby="locus-t">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Locus · Em breve</span>
+        <h2 id="locus-t">A plataforma da EnvRisk para consulta territorial</h2>
+        <p class="lede">O Locus consulta e cruza informações territoriais de fontes públicas oficiais e apresenta, de forma integrada, as ocorrências encontradas para uma localização analisada.</p>
+      </div>
+      <div class="locus">
+        <div class="locus-text">
+          <p>O Locus não atribui pesos, scores ou classificações de risco às ocorrências identificadas. Seu papel é organizar e apresentar evidências territoriais, preservando a rastreabilidade até as fontes utilizadas.</p>
+          <p class="claim">O Locus identifica ocorrências territoriais. O profissional interpreta suas implicações.</p>
+        </div>
+        <div class="locus-box" aria-label="Prévia conceitual do Locus com endereço público">
+          <div class="locus-preview">
+            <img src="assets/locus-publico.png" alt="Prévia do mapa do Locus sobre um local público em São Paulo">
+            <div class="locus-hud"><span class="live">Locus · prévia</span><span>SP · dados públicos</span></div>
+            <div class="locus-panel">
+              <b>Leitura territorial integrada</b>
+              <span>camadas incidentes</span>
+              <span>fonte · data · base legal</span>
+              <span>evidência rastreável</span>
+            </div>
+          </div>
+          <div class="locus-meta">
+            <span class="eyebrow">Em fase final de testes</span>
+            <small>Cobertura inicial · Município de São Paulo</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="fontes" aria-labelledby="fontes-t">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Fontes</span>
+        <h2 id="fontes-t">Só dados públicos e oficiais</h2>
+        <p class="lede">Trabalhamos com as bases que o próprio poder público mantém. Qualquer resultado pode ser conferido na origem.</p>
+      </div>
+      <div class="sources">
+        <span class="src">GeoSampa<small>Prefeitura de SP</small></span>
+        <span class="src">DataGEO<small>SEMIL-SP</small></span>
+        <span class="src">CETESB</span>
+        <span class="src">IBAMA</span>
+        <span class="src">INPE<small>PRODES</small></span>
+        <span class="src">SICAR<small>CAR</small></span>
+        <span class="src">FUNAI</span>
+        <span class="src">CONPRESP</span>
+        <span class="src">CONDEPHAAT</span>
+        <span class="src">IPHAN</span>
+      </div>
+      <p class="note">Listamos o órgão que produz cada dado. Parte das bases chega por portais de distribuição, como o DataGEO e o GeoSampa. Cada base tem cobertura, escala e data próprias, e por isso registramos o metadado de cada camada junto com o resultado.</p>
+    </div>
+  </section>
+
+  <section class="block" id="serie" aria-labelledby="serie-t">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Série Antes de decidir</span>
+        <h2 id="serie-t">Um tema por semana, às terças-feiras, com guia gratuito</h2>
+        <p class="lede">Conteúdo orientativo sobre como consultar dados públicos antes de reformar, construir ou comprar um imóvel. Cada publicação traz um guia em PDF no próprio post do LinkedIn.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="series">
+          <thead>
+            <tr><th scope="col">Nº</th><th scope="col">Data</th><th scope="col">Tema</th><th scope="col">Situação</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="n">01</td><td class="d">06/10/2026</td><td class="t"><strong>Seu lote tem vegetação significativa?</strong><span>Como consultar a camada no GeoSampa</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+            <tr><td class="n">02</td><td class="d">13/10/2026</td><td class="t"><strong>Antes de cortar uma árvore</strong><span>O que os Termos de Compromisso Ambiental mostram</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+            <tr><td class="n">03</td><td class="d">20/10/2026</td><td class="t"><strong>Um jardim, duas proteções</strong><span>Tombamento estadual e municipal no Jardim da Luz</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+            <tr><td class="n">04</td><td class="d">27/10/2026</td><td class="t"><strong>Reformar perto de um bem tombado</strong><span>O Viaduto Santa Ifigênia e as áreas envoltórias</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+            <tr><td class="n">05</td><td class="d">03/11/2026</td><td class="t"><strong>Os córregos que não se veem</strong><span>A camada de drenagem e o que passa sob o lote</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+            <tr><td class="n">06</td><td class="d">10/11/2026</td><td class="t"><strong>Tombado não é congelado</strong><span>Reuso e requalificação no Sesc Pompeia</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+            <tr><td class="n">07</td><td class="d">17/11/2026</td><td class="t"><strong>Leia o metadado antes do mapa</strong><span>Data, escala e norma de cada camada</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+            <tr><td class="n">08</td><td class="d">24/11/2026</td><td class="t"><strong>E-book Antes de decidir</strong><span>O guia completo, com checklist de consulta</span></td><td class="s"><span class="chip">Em breve</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="block dark" id="principios" aria-labelledby="principios-t">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Como trabalhamos</span>
+        <h2 id="principios-t">Três regras em tudo o que publicamos</h2>
+      </div>
+      <div class="three">
+        <div>
+          <h3>Fonte que você confere</h3>
+          <p>Todo número vem de fonte pública indicada, com data. Você consegue abrir e verificar por conta própria.</p>
+        </div>
+        <div>
+          <h3>Dado separado de hipótese</h3>
+          <p>Dizemos o que a camada mostra. O que ela não mostra fica dito também.</p>
+        </div>
+        <div>
+          <h3>Sem casos individuais</h3>
+          <p>Usamos bens públicos como exemplo. Não expomos imóveis, pessoas ou empresas específicas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="contato" aria-labelledby="contato-t">
+    <div class="wrap contact">
+      <div class="head" style="margin-bottom:0">
+        <span class="eyebrow">Contato</span>
+        <h2 id="contato-t">Fale com a EnvRisk</h2>
+        <p class="lede">Para sugerir temas para a série ou conversar sobre inteligência territorial.</p>
+      </div>
+      <dl>
+        <div><dt>E-mail</dt><dd><a href="mailto:contato@envrisk.com.br">contato@envrisk.com.br</a></dd></div>
+        <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/company/135277901/" target="_blank" rel="noopener">EnvRisk no LinkedIn</a></dd></div>
+        <div><dt>Base</dt><dd>São Paulo, SP</dd></div>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>EnvRisk · CNPJ 66.812.723/0001-01 · São Paulo, SP</span>
+    <span>Conteúdo orientativo. Este site não usa formulários nem coleta dados pessoais.</span>
+    <span>© 2026 EnvRisk</span>
+  </div>
+</footer>
+</body>
+</html>
